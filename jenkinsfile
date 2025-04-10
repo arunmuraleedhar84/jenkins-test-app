@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    stages {
+        stage('Who am I') {
+            steps {
+                sh 'whoami'
+            }
+        }
+        stage('Clone') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/arunmuraleedhar84/jenkins-test-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo "Simulating build..."
+                sh 'sleep 2'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo "Running dummy tests..."
+                sh 'echo All tests passed!'
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                echo "Deploying to staging..."
+                sh 'sudo cp index.html /var/www/staging.example.com/index.html'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                input message: 'Promote to production?'
+                echo "Deploying to production..."
+                sh 'sudo cp index.html /var/www/production.example.com/index.html'
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Build failed. Sending alerts..."
+        }
+    }
+}
